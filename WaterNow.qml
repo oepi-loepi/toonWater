@@ -11,6 +11,7 @@ Tile {
 		property int waterLevel: 0
 		property int flow: app.waterflow
 
+
 		function update() {
 			var newWaterLevel = 0;
 			var newNumFrames = 6;
@@ -48,7 +49,7 @@ Tile {
 		app.waterUpdated.connect(p.update)
 	}
 
-	onClicked: update()
+	onClicked: stage.openFullscreen(app.waterConfigScreenUrl)
 
 	Text {
 		id: waterWidgetText
