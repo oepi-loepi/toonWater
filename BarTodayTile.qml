@@ -12,6 +12,12 @@ Tile {
 	property string valueText: ""
 	property alias lowerRectColor: usageIndicatorLowRect.color
 	property alias upperRectColor: usageIndicatorUpperRect.color
+
+	onClicked: {
+		stage.openFullscreen(app.waterScreenUrl)
+	}
+
+
 	
 	function updateTileGraphic() {
 		var heightFullBar = backgroundRect.height - middleBarRect.height;	// full bar, subtract middle bar
