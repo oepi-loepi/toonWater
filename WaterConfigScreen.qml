@@ -11,24 +11,34 @@ Screen {
 	property bool stepRunning : false
 	property bool needReboot : false
 	property bool needRestart : false
-
-	property string fieldText5 : "URL zoals \"192.168.10.5\":"
-	property string tempURL: app.urlString
+	property string tempEspURL: app.urlEspString
+	property string tempDomURL: app.urlDomString
+	property string tempdomIdxFlow: app.domIdxFlow
+	property string tempdomIdxQuantity: app.domIdxQuantity
+	property bool	tempDomMode: app.domMode
 
 	property string fieldText1 : "Nieuwe waterstand:"
 	property string tempTotal: app.waterquantity
-	property bool waterTotalChanged : false
+	property bool   waterTotalChanged : false
 
 	property string oldConfigQmfFileString
-	property bool debugOutput : app.debugOutput
+	property bool   debugOutput : app.debugOutput
 	
 	FileIO {id: qmf_tenant_Configfile;	source: "file:///qmf/etc/qmf_tenant.xml"}
 	FileIO {id: qmf_tenant_Configfile_bak;	source: "file:///qmf/etc/qmf_tenant.waterbackup"}
+	FileIO {id: pwrusageFile;	source: "file:///mnt/data/qmf/config/config_happ_pwrusage.xml"}
+	FileIO {id: pwrusageFileBak;	source: "file:///mnt/data/qmf/config/config_happ_pwrusage.bak"}
+	FileIO {id: usageInfo;	source: "usageInfo.txt"}
+	FileIO {id: billingInfo;	source: "billingInfo.txt"}
 
 	onShown: {
 		addCustomTopRightButton("Opslaan")
-		inputField5.inputText = tempURL
+		enableDomMode.isSwitchedOn = tempDomMode
 		inputField1.inputText = tempTotal
+		espIP.inputText =tempEspURL
+		domoticzIP.inputText = tempDomURL
+		idxFlow.inputText = tempdomIdxFlow
+		idxQuantity.inputText = tempdomIdxQuantity
 	}
 
 	onCustomButtonClicked: {
@@ -40,81 +50,57 @@ Screen {
 		tempTotal= text
 		if (tempTotal != app.waterquantity){waterTotalChanged = true}
 	}
+	
+	
+	function saveespURL(text) {
+		if (text) {
+			tempURL = text;
+		}
+	}
 
-	function saveFieldData5(text) {
-		tempURL= text
+	function saveDomoticzURL1(text) {
+		if (text) {
+			 tempDomURL = text;
+		}
+	}
+
+	function saveidxFlow(text) {
+		if (text) {
+			tempdomIdxFlow = text;
+		}
+	}
+	
+	function saveidxQuantity(text) {
+		if (text) {
+			tempdomIdxQuantity = text;
+		}
 	}
 
 	Text {
 		id: mytext1
 		text:  "Instellingen"
-		font {
-			family: qfont.semiBold.name
-			pixelSize: isNxt ? 18:14
-		}
+		font.family: qfont.semiBold.name
+		font.pixelSize: isNxt ? 18:14
 		anchors {
 			top: parent.top
-			left:parent.left
-			leftMargin:100
-			topMargin:100
-		}
-	}
-
-	Text {
-		id: setText1
-		text:  "URL zoals \"192.168.10.135\""
-		font {
-			family: qfont.semiBold.name
-			pixelSize: isNxt ? 18:14
-		}
-		anchors {
-			top: mytext1.bottom
-			topMargin:  isNxt ? 10:8
-			left:mytext1.left
-		}
-	}
-
-
-	EditTextLabel4421 { 
-		id: inputField5 ; 
-		width: isNxt?  200 : 160
-		height: isNxt? 35:28;	
-		leftTextAvailableWidth: isNxt? 100:80; 
-		leftText: ""
-		anchors {
-			top: setText1.bottom
-			topMargin:  isNxt ? 8:6
-			left:mytext1.left
-		}
-		onClicked: {
-			qkeyboard.open(setText1.text, inputField5.inputText, saveFieldData5)
-		}
-	}
-	
-	Text {
-		id: setText2
-		text:  "Nieuwe waterstand"
-		font {
-			family: qfont.semiBold.name
-			pixelSize: isNxt ? 18:14
-		}
-		anchors {
-			top: inputField5.bottom
-			topMargin:  isNxt ? 10:8
-			left:mytext1.left
+			left: parent.left
+			leftMargin: 20
+			topMargin:20
 		}
 	}
 	
 	EditTextLabel4421 { 
 		id: inputField1
-		width: isNxt?  200 : 160
-		height: isNxt? 35:28;	
-		leftTextAvailableWidth: isNxt? 100:80; 
-		leftText: ""
+		width: (parent.width*0.4) - 40		
+		height: 30		
+		leftTextAvailableWidth: 200
+		leftText: "Handmatig totaal (geen kommas, punten spaties etc"
+		labelFontSize: isNxt ? 18:14
+		labelFontFamily: qfont.semiBold.name
 		anchors {
-			top: setText2.bottom
-			topMargin:  isNxt ? 8:6
-			left:mytext1.left
+			left: idxQuantity.left
+			top: mytext1.bottom
+			topMargin: 6
 		}
 		onClicked: {
 			qkeyboard.open(setText2.text, inputField1.inputText, saveFieldData1)
@@ -143,6 +129,215 @@ Screen {
 		visible: waterTotalChanged
 	}
 
+	Text {
+		id: warning1TXT
+		width:  parent.width
+		text: "Deze versie ondersteund het uitlezen van Domoticz in plaats van een ESP (Wemos)"
+		font.family: qfont.semiBold.name
+		font.pixelSize: isNxt ? 18:14
+		anchors {
+			left: parent.left
+			leftMargin: isNxt ? 20:16
+			top:savequantityText.bottom
+			topMargin: isNxt ? 10:8
+		}
+	}
+
+	Text {
+		id: warning2TXT
+		width:  parent.width
+		text: "Echter wordt dringend geadviseerd de mogelijkheid van de ESP optie te gebruiken in plaats van de Domoticz optie."
+		font.family: qfont.semiBold.name
+		font.pixelSize: isNxt ? 18:14
+		anchors {
+			left: parent.left
+			leftMargin: isNxt ? 20:16
+			top:warning1TXT.bottom
+		}
+	}
+
+	Text {
+		id: warning3TXT
+		width:  parent.width
+		text: "De Domoticz optie is namelijk traag en zal achter lopen op de werkelijkheid."
+		font.family: qfont.semiBold.name
+		font.pixelSize: isNxt ? 18:14
+		anchors {
+			left: parent.left
+			leftMargin: isNxt ? 20:16
+			top:warning2TXT.bottom
+		}
+	}
+
+	Text {
+		id: domModeTXT
+		width:  160
+		text: "Domoticz Mode"
+		font.family: qfont.semiBold.name
+		font.pixelSize: isNxt ? 18:14
+		anchors {
+			left: parent.left
+			leftMargin: isNxt ? 20:16
+			top:warning3TXT.bottom
+			topMargin: isNxt ? 10:8
+		}
+	}
+
+	OnOffToggle {
+		id: enableDomMode
+		height:  30
+		leftIsSwitchedOn: true
+		anchors {
+			left: domModeTXT.right
+			leftMargin: isNxt ? 60 : 48
+			top: domModeTXT.top		
+		}
+		onSelectedChangedByUser: {
+			if (isSwitchedOn) {
+				tempDomMode = true;
+			} else {
+				tempDomMode = false;
+			}
+		}
+	}
+
+	Text {
+		id: domModeTXT2
+		width:  160
+		text: "ESP Mode, maakt gebruik van een geflashde Wemos D1 Mini"
+		font.family: qfont.semiBold.name
+		font.pixelSize: isNxt ? 18:14
+		anchors {
+			left: enableDomMode.right
+			leftMargin: isNxt ? 65 : 25
+			top: domModeTXT.top		
+		}
+	}
+
+	Text {
+		id: myLabel
+		text: "IP adres van de ESP (bijvoorbeeld: 192.168.10.135)"
+		font.family: qfont.semiBold.name
+		font.pixelSize: isNxt ? 18:14
+		anchors {
+			left: parent.left
+			top: domModeTXT.bottom		
+			leftMargin: 20
+			topMargin: 10
+		}
+		visible: !tempDomMode
+	}
+
+	EditTextLabel4421 {
+		id: espIP
+		width: (parent.width*0.6)	
+		height: 30
+		leftTextAvailableWidth: 200
+		leftText: "esp8266 IP"
+		labelFontSize: isNxt ? 18:14
+		labelFontFamily: qfont.semiBold.name
+		anchors {
+			left: myLabel.left
+			top: myLabel.bottom
+			topMargin: 10
+		}
+		onClicked: {
+			qkeyboard.open("IP adres van de ESP", espIP.inputText, saveespURL)
+		}
+		visible: !tempDomMode
+	}
+
+	Text {
+		id: myLabel88
+		text: "URL van Domoticz (bijvoorbeekd: http://192.168.10.185:8080)"
+		font.family: qfont.semiBold.name
+		font.pixelSize: isNxt ? 18:14
+		anchors {
+			left: parent.left
+			top: domModeTXT.bottom		
+			leftMargin: 20
+			topMargin: 10
+		}
+		visible: tempDomMode
+	}
+
+	EditTextLabel4421 {
+		id:  domoticzIP
+		width: (parent.width*0.6)	
+		height: 30
+		leftTextAvailableWidth: 200
+		leftText: "Domoticz URL"
+		labelFontSize: isNxt ? 18:14
+		labelFontFamily: qfont.semiBold.name
+		anchors {
+			left: myLabel.left
+			top: myLabel.bottom
+			topMargin: 10
+		}
+
+		onClicked: {
+			qkeyboard.open("URL van Domoticz incl. Port", domoticzIP.inputText, saveDomoticzURL1)
+		}
+		visible: tempDomMode
+	}
+
+	Text {
+		id: myLabel2
+		text: "IDX from Domoticz (Devices Tab) :"
+		font.pixelSize:  isNxt ? 20 : 16
+		font.family: qfont.regular.name
+
+		anchors {
+			left: myLabel.left
+			top: domoticzIP.bottom
+			topMargin: 10
+		}
+		visible: tempDomMode
+	}
+
+	EditTextLabel4421 {
+		id: idxFlow
+		width: (parent.width*0.4) - 40		
+		height: 30		
+		leftTextAvailableWidth: 200
+		leftText: "Flow IDX"
+		labelFontSize: isNxt ? 18:14
+		labelFontFamily: qfont.semiBold.name
+		anchors {
+			left: myLabel2.left
+			top: myLabel2.bottom
+			topMargin: 6
+		}
+
+		onClicked: {
+			qkeyboard.open("Flow IDX", idxFlow.inputText, saveidxFlow)
+		}
+		visible: tempDomMode
+	}
+
+
+	EditTextLabel4421 {
+		id: idxQuantity
+		width: (parent.width*0.4) - 40		
+		height: 30		
+		leftTextAvailableWidth: 200
+		leftText: "Quantity IDX"
+		labelFontSize: isNxt ? 18:14
+		labelFontFamily: qfont.semiBold.name
+		anchors {
+			left: idxFlow.left
+			top: idxFlow.bottom
+			topMargin: 6
+		}
+
+		onClicked: {
+			qkeyboard.open("Meter IDX", idxQuantity.inputText, saveidxQuantity)
+		}
+		visible: tempDomMode
+	}
+
+	
+
 	
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -150,6 +345,7 @@ Screen {
 	function modRRDConfig(configChangeStep){
 		var configfileString
 		var oldconfigfileString
+		var oldpwrusageString =  pwrusageFile.read()
 		
 		if (debugOutput) console.log("*********Water configChangeStep = " + configChangeStep)
 		switch (configChangeStep) {
@@ -197,16 +393,67 @@ Screen {
 				} catch(e) { }
 				break;
 			}
-	
+			
 			case 2: {
+				console.log("*********Water check usageInfo in config_happ_pwrusage.xml")
+				var waterfound = false
+				var pwrusageString =  pwrusageFile.read()
+				var pwrusageArray = pwrusageString.split("<usageInfo>")
+				for (var t in pwrusageArray){
+					var n201 = pwrusageArray[t].indexOf('</usageInfo>')
+					var partOfString = pwrusageArray[t].substring(0, n201)
+					if (partOfString.indexOf("water")>-1){waterfound = true}
+				}
+				if (waterfound == false){
+					app.popupString = "Injecting usageInfo in config_happ_pwrusage.xml" + "..." 
+					pwrusageFileBak.write(oldpwrusageString)
+					var firstpart = pwrusageString.split("</Config>")[0]
+					var newString = firstpart + usageInfo.read() + "</Config>"
+					pwrusageFile.write(newString)
+					needReboot = true
+				}else{
+					app.popupString = "Water usageInfo reeds in config_happ_pwrusage.xml" + "..." 
+				}
+				break;  
+			}
+
+			case 3: {
+				console.log("*********Water check billingInfo in config_happ_pwrusage.xml")
+				var waterfound = false
+				var pwrusageString =  pwrusageFile.read()
+				var pwrusageArray = pwrusageString.split("<billingInfo>")
+				for (var t in pwrusageArray){
+					var n201 = pwrusageArray[t].indexOf('</billingInfo>')
+					var partOfString = pwrusageArray[t].substring(0, n201)
+					if (partOfString.indexOf("water")>-1){waterfound = true}
+				}
+				if (waterfound == false){
+					app.popupString = "Injecting billingInfo in config_happ_pwrusage.xml" + "..." 
+					pwrusageFileBak.write(oldpwrusageString)
+					var firstpart = pwrusageString.split("</Config>")[0]
+					var newString = firstpart + billingInfo.read() + "</Config>"
+					pwrusageFile.write(newString)
+					needReboot = true
+				}else{
+					app.popupString = "Water billingInfo reeds in config_happ_pwrusage.xml" + "..." 
+				}
+				break;  
+			}			
+			
+			case 4: {
 				console.log("*********Water save app setting")
-				app.urlString = tempURL
+				app.urlDomString = tempDomURL
+				app.domIdxFlow = tempdomIdxFlow
+				app.domIdxQuantity = tempdomIdxQuantity
+				app.domMode = 	tempDomMode
+				app.urlEspString = tempEspURL
 				app.saveSettings()
 				app.popupString = "Instellingen opgeslagen" + "..." 
+				needRestart = true
 				break;
 			}
 			
-			case 3: {
+			case 5: {
 				if (waterTotalChanged){
 					console.log("*********Water save new counter")
 					var http = new XMLHttpRequest()
@@ -218,7 +465,7 @@ Screen {
 				break;
 			}
 				
-			case 4: {
+			case 6: {
 				if (!needRestart && !needReboot) {
 					console.log("*********Water no changes so no need to restart")
 					app.popupString = "Restart niet nodig" + "..." 
@@ -231,7 +478,7 @@ Screen {
 				break;
 			}
 			
-			case 5: {
+			case 7: {
 				if  ((needRestart || needReboot)) {
 					console.log("*********Water creating backup of rewrite qmf_tenant ")
 					qmf_tenant_Configfile_bak.write(oldConfigQmfFileString)
@@ -240,7 +487,7 @@ Screen {
 				break;
 			}
 			
-			case 6: {
+			case 8: {
 				if (needRestart && !needReboot) {
 					console.log("*********Water restart")
 					console.log("*********Water restarting Toon")
@@ -251,7 +498,7 @@ Screen {
 				break;
 			}
 			
-			case 7: {
+			case 9: {
 				if (needReboot) {
 					console.log("*********Water reboot")
 					console.log("*********Water restartingToon")

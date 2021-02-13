@@ -11,7 +11,7 @@ import BxtClient 1.0
 App {
 	id: waterApp
 	
-	property string urlString
+	
 	property url 	tileUrl2 : "WaterTile.qml"
 	property url 	tileNow : "WaterNow.qml"
 
@@ -32,7 +32,6 @@ App {
 	property int 	todayValue : 0
 	property int 	dayAvgValue : 200
 	
-        property string urlString2 : "192.168.10.135"
 	property bool  	debugOutput : false
 	
 	property date 	dateTimeNow
@@ -50,15 +49,23 @@ App {
 	
 	property url 	waterRebootPopupUrl: "WaterRebootPopup.qml"
 	property 		Popup waterRebootPopup
-
-
 	
+	property bool  	domMode: false
+	property string urlDomString:""
+	property string domIdxFlow: ""
+	property string domIdxQuantity:""
+	property string urlEspString
+
 	
 	signal waterUpdated()	
 
 	
 	property variant waterSettingsJson : {
-		'urlString' : ""
+		'urlEspString' : "",
+		'domMode' : "",
+		'urlDomString' : "",
+		'domIdxFlow' : "",
+		'domIdxQuantity' : ""
 	}
 
 	function init() {
@@ -72,7 +79,7 @@ App {
 	FileIO {id: waterSettingsFile;	source: "file:///mnt/data/tsc/water_userSettings.json"}
 	FileIO {id: water_lastFiveDays;	source: "file:///mnt/data/tsc/appData/water_lastFiveDays.txt"}
 	FileIO {id: water_totalValue;	source: "file:///mnt/data/tsc/appData/water_totalValue.txt"}
-
+	
 		
 	Component.onCompleted: {
 		for (var i = 0; i <= 5; i++){lastFiveDays[i] = 0 }
@@ -82,9 +89,24 @@ App {
 		
 		waterSettingsJson = JSON.parse(waterSettingsFile.read())
 		try {
-			urlString = waterSettingsJson['urlString']
+			urlEspString = waterSettingsJson['urlString']
 		} catch(e) {
 		}
+		
+		//new version so new try
+		try {
+				var domModeTXT= waterSettingsJson['domMode']
+				if (domModeTXT == 'Domoticz'){
+					domMode = true
+				}else{
+					domMode = false
+				}
+				urlDomString = waterSettingsJson['urlDomString']
+				domIdxFlow = waterSettingsJson['domIdxFlow']
+				domIdxQuantity = waterSettingsJson['domIdxQuantity']
+		} catch(e) {
+		} 
+		
 		
 		//calculate the average 5 day value for the daytile
 		try {var lastFiveDaysString = water_lastFiveDays.read() ; if (lastFiveDaysString.length >2 ){lastFiveDays = lastFiveDaysString.split(',') }} catch(e) { }
@@ -111,17 +133,17 @@ App {
 		} catch(e) {}
 		
 	}
-///////////////////////////////////////////////////////////////// GET DATA //////////////////////////////////////////////////////////////////////////////	
+///////////////////////////////////////////////////////////////// GET DATA ESP ///////////////////////////////////////////////////////////////////////////	
 
-	function getData(fivemin){
-		if (debugOutput) console.log("*********Water Start getData")
-		if (urlString !=""){
+	function getESPData(fivemin){
+		if (debugOutput) console.log("*********Water Start getESPData")
+		if (urlEspString !=""){
 			var http = new XMLHttpRequest()
-			http.open("GET", "http://" + urlString + "/water.html", true); //check the feeds from the webpage
+			http.open("GET", "http://" + urlEspString + "/water.html", true); //check the feeds from the webpage
 			http.onreadystatechange = function() {
 				if (http.readyState === XMLHttpRequest.DONE) {
 					if (http.status === 200) {
-						if (debugOutput) onsole.log("*********Water http.responseText: " + http.responseText)
+						if (debugOutput) console.log("*********Water http.responseText: " + http.responseText)
 						var JsonString = http.responseText
 						var JsonObject= JSON.parse(JsonString)
 						// {"waterflow":"0","waterquantity":"1031188"}
@@ -147,6 +169,70 @@ App {
 			http.send();
 		}
     }
+	
+
+///////////////////////////////////////////////////////////////// GET DATA Domoticz ///////////////////////////////////////////////////////////////////////////	
+			
+	function getDomoticzData(fivemin){
+		if (debugOutput) console.log("*********Water Start getDomoticzData")
+		var http = new XMLHttpRequest();
+		http.open("GET", urlDomString + "/json.htm?type=devices&rid=" + domIdxFlow, true)
+		http.onreadystatechange = function() {
+			if (http.readyState == XMLHttpRequest.DONE) {
+				if (http.status === 200 || http.status === 300  || http.status === 302) {
+					try {
+						var JsonString = http.responseText
+						if (debugOutput) console.log("*********Water http.responseText: " + http.responseText)
+						var JsonObject = JSON.parse(JsonString)
+						waterflow= parseInt((JsonObject.result[0].Data).split(' ')[0])
+						if (debugOutput) console.log("*********Water waterflow: " + waterflow)
+						if (debugOutput) console.log("*********Water waterquantity: " + waterquantity)
+						getDomoticzData2(fivemin, waterflow)
+					}
+					catch(e){
+						waterflow = 0
+					}
+				} else {
+					if (debugOutput) console.log("*********Water error: " + http.status)
+				}
+			}
+		}
+		http.send();
+    }
+	
+	function getDomoticzData2(fivemin, waterflow){
+		if (debugOutput) console.log("*********Water Start getDomoticzData")
+		var http = new XMLHttpRequest();
+		http.open("GET", urlDomString + "/json.htm?type=devices&rid=" + domIdxQuantity, true)
+		http.onreadystatechange = function() {
+			if (http.readyState == XMLHttpRequest.DONE) {
+				if (http.status === 200 || http.status === 300  || http.status === 302) {
+						var JsonString = http.responseText
+						if (debugOutput) console.log("*********Water http.responseText: " + http.responseText)
+						var JsonObject= JSON.parse(JsonString)
+						var reswaterquantity= (JsonObject.result[0].Data).split(' ')[0]
+						if (debugOutput) console.log("*********Water waterquantity: " + waterquantity)
+						reswaterquantity = reswaterquantity.replace(".","")
+						waterquantity= parseInt(reswaterquantity)
+						if (debugOutput) console.log("*********Water waterflow: " + waterflow)
+						if (debugOutput) console.log("*********Water waterquantity: " + waterquantity)
+						if (yesterdayquantity  > waterquantity){
+							try {var totalValueString = water_totalValue.read(); if (totalValueString.length > 0 ){yesterdayquantity = parseInt(totalValueString)}} catch(e) {}
+						}
+						if (debugOutput) console.log("*********Water waterquantity " + waterquantity)
+						if (debugOutput) console.log("*********Water yesterdayquantity " + yesterdayquantity)
+						todayValue = waterquantity - yesterdayquantity
+						if (debugOutput) console.log("*********Water todayValue " + todayValue)
+						waterUpdated()
+						if (fivemin){doData()}
+				} else {
+					if (debugOutput) console.log("*********Water error: " + http.status)
+				}
+			}
+		}
+		http.send();
+    }
+	
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////DO DATA  //////////////////////////////////////////////////////////////////////////////////////////
@@ -248,6 +334,7 @@ App {
 		todayValue = 0
 	}
 ///////////////////////////////////////// TIMERS /////////////////////////////////////////////////////////////////////////////////////////////////
+
     Timer {
 		id: scrapeTimer   //interval to get the water data
 		interval: 10000
@@ -257,7 +344,11 @@ App {
 		onTriggered: {
 			if (debugOutput) console.log("*********Water Start timer getData")
 			from5min = false
-			getData(from5min)
+			if (domMode){
+				getDomoticzData(from5min)
+			}else{
+				getESPData(from5min)
+			}
         }
     }
 	
@@ -275,18 +366,37 @@ App {
 				mins = parseInt(Qt.formatDateTime(dateTimeNow,"mm"))
 				if (debugOutput) console.log("*********Water dtime : " + dtime)
 				from5min = true
-				getData(from5min)
+				if (domMode){
+					getDomoticzData(from5min)
+				}else{
+					getESPData(from5min)
+				}
 			}
     }
 	
 ///////////////////////////////////////// SAVE ALL TO SETTINGS ///////////////////////////////////////////////////////////////////////////////////////////////// 
    	function saveSettings() {
+		var tempDomModeTxt
+		if (domMode){
+			tempDomModeTxt = "Domoticz"
+		}else{
+			tempDomModeTxt = "ESP"
+		}		
 		var setJson = {
-			"urlString" : urlString,
+			"urlDomString" : urlDomString,
+			"domIdxFlow" : domIdxFlow,
+			"domIdxQuantity" : domIdxQuantity,
+			"domMode" : tempDomModeTxt,
+			"urlString" : urlEspString
 		}
 		waterSettingsFile.write(JSON.stringify(setJson))
 		waterSettingsJson = JSON.parse(waterSettingsFile.read())
-		getData()
+		from5min = true
+		if (domMode){
+			getDomoticzData(from5min)
+		}else{
+			getESPData(from5min)
+		}
 	}
 	
 	function restartToon() {
