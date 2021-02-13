@@ -1,0 +1,9 @@
+
+<usageInfo>
+     <sensorInactiveTimestamp>0</sensorInactiveTimestamp>
+     <package>happ_pwrusage</package>
+     <uuid>7f924670-41df-4830-bd75-12d1916af67e</uuid>
+     <type>water</type>
+     <internalAddress>WaterUsage</internalAddress>
+     <visibility>1</visibility>
+</usageInfo>

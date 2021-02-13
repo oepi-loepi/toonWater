@@ -34,7 +34,7 @@ Tile {
 			family: qfont.regular.name
 			pixelSize: qfont.tileTitle
 		}
-		color: dimmableColors.tileTitleColor
+		color: !dimState? "black" : "white"
 		text: "Water"
 	}
 

@@ -1,0 +1,18 @@
+
+<billingInfo>
+     <NextBillingDate>0</NextBillingDate>
+     <rate>0</rate>
+     <usage>0</usage>
+     <price>1.0000</price>
+     <priceNet>0.8264</priceNet>
+     <vat>21</vat>
+     <package>happ_pwrusage</package>
+     <uuid>9aef08a9-5f84-4462-9196-b9701f758a07</uuid>
+     <type>water</type>
+     <internalAddress>WaterBilling</internalAddress>
+     <visibility>0</visibility>
+     <tariffDatabaseFilled>0</tariffDatabaseFilled>
+     <receivedMonthFractions>0</receivedMonthFractions>
+     <installedDate>1609065981</installedDate>
+     <errorOccurred>0</errorOccurred>
+</billingInfo>

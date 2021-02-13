@@ -1,3 +1,7 @@
+1.1.2
+- domoticz added
+- usageInfo & billingInfo added to config_happ_pwrusage.xml
+
 1.1.1
 - all custum tiles clickable
 
