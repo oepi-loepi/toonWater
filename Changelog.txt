@@ -1,3 +1,6 @@
+1.1.3
+- fixed error when saving esp ip
+
 1.1.2
 - domoticz added
 - usageInfo & billingInfo added to config_happ_pwrusage.xml
