@@ -54,7 +54,7 @@ Screen {
 	
 	function saveespURL(text) {
 		if (text) {
-			tempURL = text;
+			tempEspURL = text;
 		}
 	}
 
