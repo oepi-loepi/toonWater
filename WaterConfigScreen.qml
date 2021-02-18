@@ -103,7 +103,7 @@ Screen {
 			topMargin: 6
 		}
 		onClicked: {
-			qkeyboard.open(setText2.text, inputField1.inputText, saveFieldData1)
+			qkeyboard.open(inputField1.leftText, inputField1.inputText, saveFieldData1)
 		}
 	}
 
