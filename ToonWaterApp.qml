@@ -26,6 +26,7 @@ App {
 	property string configMsgUuid : ""
 
 	property url	waterTodayTileUrl : "WaterTodayTile.qml"
+	property url	waterTodayTileEurUrl : "WaterTodayTileEuro.qml"
 	
   	property int 	waterflow : 0
 	property int 	waterquantity : 0
@@ -55,6 +56,8 @@ App {
 	property string domIdxFlow: ""
 	property string domIdxQuantity:""
 	property string urlEspString
+	
+	property string waterTariff : "1.0000"
 
 	
 	signal waterUpdated()	
@@ -72,13 +75,15 @@ App {
 		registry.registerWidget("tile", tileNow, this, null, {thumbLabel: qsTr("Nu"), thumbIcon: thumbnailIcon1, thumbCategory: "general", thumbWeight: 30, baseTileWeight: 10, thumbIconVAlignment: "center"});
 		registry.registerWidget("tile", tileUrl2, this, null, {thumbLabel: qsTr("Text"), thumbIcon: thumbnailIcon1, thumbCategory: "general", thumbWeight: 30, baseTileWeight: 10, thumbIconVAlignment: "center"});
 		registry.registerWidget("screen", waterConfigScreenUrl, this, "waterConfigScreen")
-		registry.registerWidget("tile", waterTodayTileUrl, this, null,  {thumbLabel: qsTr("Vandaag"), thumbIcon:  thumbnailIcon1, thumbCategory:  "general", thumbWeight: 30, baseTileSolarWeight: 10, thumbIconVAlignment: "center"});
+		registry.registerWidget("tile", waterTodayTileUrl, this, null,  {thumbLabel: qsTr("Vandaag m3"), thumbIcon:  thumbnailIcon1, thumbCategory:  "general", thumbWeight: 30, baseTileSolarWeight: 10, thumbIconVAlignment: "center"});
+		registry.registerWidget("tile", waterTodayTileEurUrl, this, null,  {thumbLabel: qsTr("Vandaag EUR"), thumbIcon:  thumbnailIcon1, thumbCategory:  "general", thumbWeight: 30, baseTileSolarWeight: 10, thumbIconVAlignment: "center"});
 		registry.registerWidget("popup", waterRebootPopupUrl, waterApp, "waterRebootPopup");
 	}
 
 	FileIO {id: waterSettingsFile;	source: "file:///mnt/data/tsc/water_userSettings.json"}
 	FileIO {id: water_lastFiveDays;	source: "file:///mnt/data/tsc/appData/water_lastFiveDays.txt"}
 	FileIO {id: water_totalValue;	source: "file:///mnt/data/tsc/appData/water_totalValue.txt"}
+	FileIO {id: pwrusageFile;	source: "file:///mnt/data/qmf/config/config_happ_pwrusage.xml"}
 	
 		
 	Component.onCompleted: {
@@ -107,6 +112,7 @@ App {
 		} catch(e) {
 		} 
 		
+		getTariff()
 		
 		//calculate the average 5 day value for the daytile
 		try {var lastFiveDaysString = water_lastFiveDays.read() ; if (lastFiveDaysString.length >2 ){lastFiveDays = lastFiveDaysString.split(',') }} catch(e) { }
@@ -125,15 +131,35 @@ App {
 		
 		try {
 			var totalValueString = water_totalValue.read(); 
-
 			if (totalValueString.length > 0 ){
 				yesterdayquantity = parseInt(totalValueString); 
 				//console.log("*********Water yesterdayquantity from disk " + yesterdayquantity)
 			}
 		} catch(e) {}
 		
+		
 	}
-///////////////////////////////////////////////////////////////// GET DATA ESP ///////////////////////////////////////////////////////////////////////////	
+	
+///////////////////////////////////////////////////////////////// GET BILLING TARIFF ///////////////////////////////////////////////////////////////////////////	
+	function getTariff(){
+		console.log("*********Water get Tariff")
+		var waterfound = false
+		var pwrusageString =  pwrusageFile.read()
+		var pwrusageArray = pwrusageString.split("<billingInfo>")
+		for (var t in pwrusageArray){
+			var n201 = pwrusageArray[t].indexOf('</billingInfo>')
+			var partOfString = pwrusageArray[t].substring(0, n201)
+			if (partOfString.indexOf("water")>-1){
+				waterfound = true
+				var n205 = partOfString.indexOf('<price>') + "<price>".length
+				var n206 = partOfString.indexOf('</price>')
+				waterTariff = partOfString.substring(n205,n206)
+				console.log("*********Water waterTariff " + waterTariff)
+			}
+		}
+    }
+	
+///////////////////////////////////////////////////////////////// GET DATA ESP ///////////////////////////////////////////////////////////////////////////
 
 	function getESPData(fivemin){
 		if (debugOutput) console.log("*********Water Start getESPData")

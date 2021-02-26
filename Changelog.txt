@@ -1,3 +1,7 @@
+1.1.5
+- correct calculation of water cost for day tile
+- tile added for water day euro
+
 1.1.4
 - fixed error when saving water quantity in esp
 

@@ -438,8 +438,9 @@ Screen {
 					app.popupString = "Water billingInfo reeds in config_happ_pwrusage.xml" + "..." 
 				}
 				break;  
-			}			
-			
+			}
+
+
 			case 4: {
 				console.log("*********Water save app setting")
 				app.urlDomString = tempDomURL
