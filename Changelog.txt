@@ -1,3 +1,6 @@
+1.1.6
+- corrected save of new water value
+
 1.1.5
 - correct calculation of water cost for day tile
 - tile added for water day euro
