@@ -458,7 +458,7 @@ Screen {
 				if (waterTotalChanged){
 					console.log("*********Water save new counter")
 					var http = new XMLHttpRequest()
-					var url = "http://" + app.urlString + "/setnew?" + tempTotal
+					var url = "http://" + app.urlEspString + "/setnew?" + tempTotal
 					http.open("GET", url, true)
 					http.send();
 					app.popupString = "Nieuwe tellerstand opgeslagen" + "..." 
