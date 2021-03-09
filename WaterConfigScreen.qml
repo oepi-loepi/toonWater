@@ -196,8 +196,7 @@ Screen {
 			if (isSwitchedOn) {
 				tempDomMode = true;
 			} else {
-				tempDomMode = false;
-			}
+				tempDomMode = false;			}
 		}
 	}
 
@@ -442,15 +441,19 @@ Screen {
 
 
 			case 4: {
-				console.log("*********Water save app setting")
-				app.urlDomString = tempDomURL
-				app.domIdxFlow = tempdomIdxFlow
-				app.domIdxQuantity = tempdomIdxQuantity
-				app.domMode = 	tempDomMode
-				app.urlEspString = tempEspURL
-				app.saveSettings()
-				app.popupString = "Instellingen opgeslagen" + "..." 
-				needRestart = true
+				if (app.urlDomString != tempDomURL || app.domIdxFlow != tempdomIdxFlow || app.domIdxQuantity != tempdomIdxQuantity || app.domMode != tempDomMode || app.urlEspString != tempEspURL){
+					console.log("*********Water save app setting")
+					app.urlDomString = tempDomURL
+					app.domIdxFlow = tempdomIdxFlow
+					app.domIdxQuantity = tempdomIdxQuantity
+					app.domMode = 	tempDomMode
+					app.urlEspString = tempEspURL
+					app.saveSettings()
+					app.popupString = "Instellingen opgeslagen" + "..." 
+					needRestart = true
+				}else{
+					app.popupString = "Geen veranderingen in instellingen" + "..." 
+				}
 				break;
 			}
 			
