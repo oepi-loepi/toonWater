@@ -1,3 +1,6 @@
+1.1.7
+- not allways restarting/rebooting after leaving setup screen
+
 1.1.6
 - corrected save of new water value
 
