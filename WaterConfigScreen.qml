@@ -346,8 +346,8 @@ Screen {
 			rightMargin:10
 			bottomMargin:10
 		}
-		width: 150 
-		height: 150
+		width: isNxt ? 150:120
+		height: isNxt ? 150:120
 		fillMode: Image.PreserveAspectFit	
 	}
 
