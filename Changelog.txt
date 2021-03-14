@@ -1,3 +1,6 @@
+1.1.9
+- versioning corrected
+
 1.1.8
 - QR Code added
 
