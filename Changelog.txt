@@ -1,3 +1,6 @@
+1.1.8
+- QR Code added
+
 1.1.7
 - not allways restarting/rebooting after leaving setup screen
 

@@ -335,7 +335,34 @@ Screen {
 		visible: tempDomMode
 	}
 
-	
+
+
+	Image {
+		id: qrCode
+		source: "file:///qmf/qml/apps/toonWater/drawables/qrCode.png"
+		anchors {
+			right:  parent.right	
+			bottom: parent.bottom
+			rightMargin:10
+			bottomMargin:10
+		}
+		width: 150 
+		height: 150
+		fillMode: Image.PreserveAspectFit	
+	}
+
+	Text {
+		id: myLabel90
+		text: "Nog geen meter?"
+		font.family: qfont.semiBold.name
+		font.pixelSize: isNxt ? 18:14
+		anchors {
+			horizontalCenter: qrCode.horizontalCenter
+			bottom: qrCode.top		
+			bottomMargin:10
+		}
+	}
+
 
 	
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
