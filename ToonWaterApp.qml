@@ -283,16 +283,6 @@ App {
 /////////////////////////////////////////Each time data was received      /////////////////////////////////////////////////////////////////////////////////
 	
 	function doEachtimeStuff(){
-		var this5minflow= waterflow * 60  //(flow per hour)
-		//push current 5 minutes into the array for the RRA  flow
-		var http2 = new XMLHttpRequest()
-		var url2 = "http://localhost/hcb_rrd?action=setRrdData&loggerName=water_flow&rra=5min&samples=%7B%22" + parseInt(dateTimeNow.getTime()/1000)+ "%22%3A" + parseInt(this5minflow) + "%7D"
-		http2.open("GET", url2, true)
-		http2.send()
-		
-		oldquantity = waterquantity
-	
-		/*
 		var this5minquantity= 0
 		var this5minflow= this5minquantity *12  //(flow per hour)
 		if (oldquantity>0){
@@ -306,8 +296,6 @@ App {
 		http2.send()
 		
 		oldquantity = waterquantity
-		
-		*/
 		
 		//push quantity into the 5yrhours RRA data
 		//produced this day so it must be in the RRA of next hour 00 mins
