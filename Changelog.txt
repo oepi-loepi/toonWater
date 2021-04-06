@@ -1,3 +1,11 @@
+1.1.11
+- data in www mobile removed for mobile app
+- flow in liters/hr corrected
+
+1.1.10
+- data in www mobile written for mobile app
+
+
 1.1.9
 - versioning corrected
 
