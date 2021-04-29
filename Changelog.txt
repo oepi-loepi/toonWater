@@ -1,3 +1,6 @@
+1.1.13
+- domoticz water quantity error repaired
+
 1.1.12
 - rollback to version 1.1.9
 

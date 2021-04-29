@@ -237,9 +237,41 @@ App {
 						if (debugOutput) console.log("*********Water http.responseText: " + http.responseText)
 						var JsonObject= JSON.parse(JsonString)
 						var reswaterquantity= (JsonObject.result[0].Data).split(' ')[0]
-						if (debugOutput) console.log("*********Water waterquantity: " + waterquantity)
-						reswaterquantity = reswaterquantity.replace(".","")
-						waterquantity= parseInt(reswaterquantity)
+						waterquantity= reswaterquantity
+						//console.log("*********Water waterquantity: " + reswaterquantity)
+						if (reswaterquantity.indexOf("e+")>-1){
+							var number = reswaterquantity.split("e+")[0]
+							var number2 = reswaterquantity.split("e+")[1]
+							//console.log("*********Water number: " +number)
+							//console.log("*********Water number2: " + number2)
+							var newnumber = parseInt(parseFloat(number) * Math.pow(10,parseInt(number2)))
+							//console.log("*********Water newnumber: " + newnumber)
+							waterquantity= newnumber
+							
+						}
+						if (reswaterquantity.indexOf(".")>-1){
+							var leftstring = reswaterquantity.split(".")[0]
+							var rightstring = reswaterquantity.split(".")[1]
+							if (rightstring.length == 0)rightstring = "000"
+							if (rightstring.length == 1)rightstring = rightstring + "00"
+							if (rightstring.length == 2)rightstring = rightstring + "0"
+							if (rightstring.length == 3)rightstring = rightstring
+							reswaterquantity = leftstring  + rightstring
+							//console.log("*********Water reswaterquantity: " + reswaterquantity)
+							waterquantity= parseInt(reswaterquantity)
+						}
+						
+						if (reswaterquantity.indexOf(",")>-1){
+							var leftstring = reswaterquantity.split(",")[0]
+							var rightstring = reswaterquantity.split(",")[1]
+							if (rightstring.length == 0)rightstring = "000"
+							if (rightstring.length == 1)rightstring = rightstring + "00"
+							if (rightstring.length == 2)rightstring = rightstring + "0"
+							if (rightstring.length == 3)rightstring = rightstring
+							reswaterquantity = leftstring  + rightstring
+							//console.log("*********Water reswaterquantity: " + reswaterquantity)
+							waterquantity= parseInt(reswaterquantity)
+						}
 						if (debugOutput) console.log("*********Water waterflow: " + waterflow)
 						if (debugOutput) console.log("*********Water waterquantity: " + waterquantity)
 						if (yesterdayquantity  > waterquantity){
