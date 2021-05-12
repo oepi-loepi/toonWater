@@ -54,7 +54,7 @@ Tile {
 	Text {
 		id: waterWidgetText
 		color: dimmableColors.tileTitleColor
-		text:"Water Nu"
+		text:"Water nu"
 		anchors {
 			baseline: parent.top
 			baselineOffset: Math.round(30 * verticalScaling)
