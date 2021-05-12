@@ -41,7 +41,7 @@ Tile {
 	
 	Text {
 		id: curFlow
-		text: "Flow Nu: " + flow  + " l/m"
+		text: "Flow nu: " + flow  + " l/m"
 		color: !dimState? "black" : "white"
 		anchors {
 			top: tileTitle.bottom
