@@ -1,5 +1,9 @@
+1.1.15
+- modified for mobile app
+- tariff setting added
+
 1.1.14
-- Lowercased second words on the tiles instead of capitals
+- lowerCase instead of Capitals on tile text
 
 1.1.13
 - domoticz water quantity error repaired
