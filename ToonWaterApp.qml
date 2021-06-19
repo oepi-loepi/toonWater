@@ -20,8 +20,12 @@ App {
 	property url 	thumbnailIcon1: ("qrc://apps/graph/drawables/waterTapTile-thumb.svg")    //werkt
 
 	
-	property		WaterConfigScreen  waterConfigScreen
+	property	WaterConfigScreen  waterConfigScreen
 	property url 	waterConfigScreenUrl : "WaterConfigScreen.qml"
+	
+	property	WaterTariffScreen  waterTariffScreen
+	property url 	waterTariffScreenUrl : "WaterTariffScreen.qml"
+	
 	property string popupString : "Water instellen en herstarten als nodig" + "..."
 	property string configMsgUuid : ""
 
@@ -34,6 +38,8 @@ App {
 	property int 	dayAvgValue : 200
 	
 	property bool  	debugOutput : false
+    property int 	waterflowMobile : 0
+	property int 	watertodayMobile : 0
 	
 	property date 	dateTimeNow
 	property int 	dday
@@ -75,6 +81,7 @@ App {
 		registry.registerWidget("tile", tileNow, this, null, {thumbLabel: qsTr("Nu"), thumbIcon: thumbnailIcon1, thumbCategory: "general", thumbWeight: 30, baseTileWeight: 10, thumbIconVAlignment: "center"});
 		registry.registerWidget("tile", tileUrl2, this, null, {thumbLabel: qsTr("Text"), thumbIcon: thumbnailIcon1, thumbCategory: "general", thumbWeight: 30, baseTileWeight: 10, thumbIconVAlignment: "center"});
 		registry.registerWidget("screen", waterConfigScreenUrl, this, "waterConfigScreen")
+		registry.registerWidget("screen", waterTariffScreenUrl, this, "waterTariffScreen")
 		registry.registerWidget("tile", waterTodayTileUrl, this, null,  {thumbLabel: qsTr("Vandaag m3"), thumbIcon:  thumbnailIcon1, thumbCategory:  "general", thumbWeight: 30, baseTileSolarWeight: 10, thumbIconVAlignment: "center"});
 		registry.registerWidget("tile", waterTodayTileEurUrl, this, null,  {thumbLabel: qsTr("Vandaag EUR"), thumbIcon:  thumbnailIcon1, thumbCategory:  "general", thumbWeight: 30, baseTileSolarWeight: 10, thumbIconVAlignment: "center"});
 		registry.registerWidget("popup", waterRebootPopupUrl, waterApp, "waterRebootPopup");
@@ -84,6 +91,7 @@ App {
 	FileIO {id: water_lastFiveDays;	source: "file:///mnt/data/tsc/appData/water_lastFiveDays.txt"}
 	FileIO {id: water_totalValue;	source: "file:///mnt/data/tsc/appData/water_totalValue.txt"}
 	FileIO {id: pwrusageFile;	source: "file:///mnt/data/qmf/config/config_happ_pwrusage.xml"}
+	FileIO {id: water_mobile;	source: "file:///qmf/www/mobile/water_mobile.json"}
 	
 		
 	Component.onCompleted: {
@@ -186,6 +194,11 @@ App {
 						todayValue = waterquantity - yesterdayquantity
 						//console.log("*********Water todayValue " + todayValue)
 						waterUpdated()
+						if (waterflowMobile != waterflow || watertodayMobile != todayValue ){
+							water_mobile.write("{\"result\":\"ok\",\"water\": {\"flow\":" + waterflow + ", \"value\":" + todayValue + ", \"avgValue\":" + dayAvgValue + "}}")
+						    waterflowMobile = waterflow
+							watertodayMobile = todayValue
+						}
 						if (fivemin){doData()}
 					} else {
 						if (debugOutput) console.log("*********Water error: " + http.status)
@@ -282,6 +295,11 @@ App {
 						todayValue = waterquantity - yesterdayquantity
 						if (debugOutput) console.log("*********Water todayValue " + todayValue)
 						waterUpdated()
+						if (waterflowMobile != waterflow || watertodayMobile != todayValue ){
+							water_mobile.write("{\"result\":\"ok\",\"water\": {\"flow\":" + waterflow + ", \"value\":" + todayValue + ", \"avgValue\":" + dayAvgValue + "}}")
+						    waterflowMobile = waterflow
+							watertodayMobile = todayValue
+						}
 						if (fivemin){doData()}
 				} else {
 					if (debugOutput) console.log("*********Water error: " + http.status)

@@ -20,6 +20,7 @@ Screen {
 	property string fieldText1 : "Nieuwe waterstand:"
 	property string tempTotal: app.waterquantity
 	property bool   waterTotalChanged : false
+	property bool   waterTarifffound: false
 
 	property string oldConfigQmfFileString
 	property bool   debugOutput : app.debugOutput
@@ -33,6 +34,7 @@ Screen {
 
 	onShown: {
 		addCustomTopRightButton("Opslaan")
+		getTariff()
 		enableDomMode.isSwitchedOn = tempDomMode
 		inputField1.inputText = tempTotal
 		espIP.inputText =tempEspURL
@@ -106,6 +108,29 @@ Screen {
 			qkeyboard.open(inputField1.leftText, inputField1.inputText, saveFieldData1)
 		}
 	}
+	
+	NewTextLabel {
+		id: tariffButton
+		width: isNxt ? 284 : 220  
+		height: isNxt ? 35 : 30
+		buttonActiveColor: "lightgrey"
+		buttonHoverColor: "blue"
+		enabled : true
+		textColor : "black"
+		textDisabledColor : "grey"
+		buttonText: "tarieven"
+		anchors {
+			top: mytext1.bottom
+			topMargin: 6
+			left: inputField1.right
+			leftMargin: 30
+			}
+		onClicked: {
+				onClicked: {stage.openFullscreen(app.waterTariffScreenUrl)}	
+			}
+		visible: waterTarifffound
+	}
+
 
 	NewTextLabel {
 		id: savequantityText
@@ -367,6 +392,23 @@ Screen {
 	
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	function getTariff(){
+
+				console.log("*********Water check billingInfo in config_happ_pwrusage.xml")
+				var waterfound = false
+				var pwrusageString =  pwrusageFile.read()
+				var pwrusageArray = pwrusageString.split("<billingInfo>")
+				for (var t in pwrusageArray){
+					var n201 = pwrusageArray[t].indexOf('</billingInfo>')
+					var partOfString = pwrusageArray[t].substring(0, n201)
+					if (partOfString.indexOf("water")>-1){
+							waterTarifffound = true
+					}
+				}
+	}
+
+
 
 	function modRRDConfig(configChangeStep){
 		var configfileString
