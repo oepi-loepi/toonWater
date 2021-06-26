@@ -91,7 +91,7 @@ App {
 	FileIO {id: water_lastFiveDays;	source: "file:///mnt/data/tsc/appData/water_lastFiveDays.txt"}
 	FileIO {id: water_totalValue;	source: "file:///mnt/data/tsc/appData/water_totalValue.txt"}
 	FileIO {id: pwrusageFile;	source: "file:///mnt/data/qmf/config/config_happ_pwrusage.xml"}
-	FileIO {id: water_mobile;	source: "file:///qmf/www/mobile/water_mobile.json"}
+	FileIO {id: water_mobile;	source: "file:///qmf/www/water.html"}
 	
 		
 	Component.onCompleted: {
@@ -195,7 +195,7 @@ App {
 						//console.log("*********Water todayValue " + todayValue)
 						waterUpdated()
 						if (waterflowMobile != waterflow || watertodayMobile != todayValue ){
-							water_mobile.write("{\"result\":\"ok\",\"water\": {\"flow\":" + waterflow + ", \"value\":" + todayValue + ", \"avgValue\":" + dayAvgValue + "}}")
+						    water_mobile.write("{\"result\":\"ok\",\"water\": {\"flow\":" + waterflow + ", \"total\":" + waterquantity + ", \"value\":" + todayValue + ", \"avgValue\":" + dayAvgValue + "}}")
 						    waterflowMobile = waterflow
 							watertodayMobile = todayValue
 						}
@@ -296,8 +296,8 @@ App {
 						if (debugOutput) console.log("*********Water todayValue " + todayValue)
 						waterUpdated()
 						if (waterflowMobile != waterflow || watertodayMobile != todayValue ){
-							water_mobile.write("{\"result\":\"ok\",\"water\": {\"flow\":" + waterflow + ", \"value\":" + todayValue + ", \"avgValue\":" + dayAvgValue + "}}")
-						    waterflowMobile = waterflow
+					             water_mobile.write("{\"result\":\"ok\",\"water\": {\"flow\":" + waterflow + ", \"total\":" + waterquantity + ", \"value\":" + todayValue + ", \"avgValue\":" + dayAvgValue + "}}")
+						     waterflowMobile = waterflow
 							watertodayMobile = todayValue
 						}
 						if (fivemin){doData()}
