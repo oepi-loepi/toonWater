@@ -1,3 +1,6 @@
+1.1.16
+- changed location of water data for mobile app
+
 1.1.15
 - modified for mobile app
 - tariff setting added
