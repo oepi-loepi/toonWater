@@ -12,13 +12,13 @@ Tile {
 	property string valueText: ""
 	property alias lowerRectColor: usageIndicatorLowRect.color
 	property alias upperRectColor: usageIndicatorUpperRect.color
+	property bool dimState: screenStateController.dimmedColors
+
 
 	onClicked: {
 		stage.openFullscreen(app.waterScreenUrl)
 	}
 
-
-	
 	function updateTileGraphic() {
 		var heightFullBar = backgroundRect.height - middleBarRect.height;	// full bar, subtract middle bar
 		var heightHalfBar = heightFullBar / 2;
@@ -142,6 +142,20 @@ Tile {
 		color: fixedDayCost ? dimmableColors.dayTileAverageBar : dimmableColors.dayTileUsageBar
 		mouseEnabled: false
 	}
+
+	Image {
+		id: mask2
+		source: "file:///qmf/qml/apps/toonWater/drawables/drop-dim-toon3.png"
+		anchors {
+			horizontalCenter: parent.horizontalCenter
+			bottom: backgroundRect.bottom
+		}
+		
+		width: isNxt ? 60:48
+		height: isNxt ? 120:96
+		visible: dimState
+	}
+
 	
 	Timer {
         id: openTimer   //when opening screen
