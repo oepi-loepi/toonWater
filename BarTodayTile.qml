@@ -151,7 +151,7 @@ Tile {
 			bottom: backgroundRect.bottom
 		}
 		
-		width: isNxt ? 60:48
+		width: isNxt ? 58:45
 		height: isNxt ? 120:96
 		visible: dimState
 	}

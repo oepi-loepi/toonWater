@@ -430,7 +430,7 @@ App {
 	
     Timer {
             id: scrapeTimer2   //interval to write the data to the rrd
-            interval: 30000
+            interval: 300000
             repeat: true
             running: false
             triggeredOnStart: true
