@@ -1,3 +1,6 @@
+1.1.19
+- Price ex TAX removed fro tariff
+
 1.1.18
 - Timer error solved
 
