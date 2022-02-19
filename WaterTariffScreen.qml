@@ -12,10 +12,8 @@ Screen {
 	property bool needReboot : false
 	
 	property string  oldprice : ""
-	property string  oldpriceNet : ""
 	
 	property string  newprice : oldprice
-	property string  newpriceNet : oldpriceNet
 	
 	
 	property string pwrusageFileString : "file:///mnt/data/qmf/config/config_happ_pwrusage.xml"
@@ -27,7 +25,6 @@ Screen {
 		addCustomTopRightButton("Opslaan")
 		getTariff()
 		priceInput.inputText = newprice
-		priceNetInput.inputText = newpriceNet
 	}
 
 	onCustomButtonClicked: {
@@ -42,16 +39,10 @@ Screen {
 		}
 	}
 
-	function savepriceNet(text) {
-		if (text) {
-		     if(text.indexOf(',')>-1){text = text.replace(',','.')}
-			 newpriceNet = text;
-		}
-	}
 
 	Text {
 		id: mytext1
-		text:  "Prijzen"
+		text:  "Prijs"
 		font.family: qfont.semiBold.name
 		font.pixelSize: isNxt ? 18:14
 		anchors {
@@ -81,25 +72,6 @@ Screen {
 	}
 
 
-	EditTextLabel4421 {
-		id: priceNetInput
-		width: (parent.width*0.6)	
-		height: 30
-		leftTextAvailableWidth: (parent.width*0.6)-100
-		leftText: "Prijs exclusief belasting (Netto)  (bijv. 0.8700)"
-		labelFontSize: isNxt ? 18:14
-		labelFontFamily: qfont.semiBold.name
-		anchors {
-			left: mytext1.left
-			top: priceInput.bottom
-			topMargin: 10
-		}
-		onClicked: {
-			qkeyboard.open(priceNetInput.leftText, priceNetInput.inputText,savepriceNet)
-
-		}
-	}
-
 
 	
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -116,14 +88,11 @@ Screen {
 					var partOfString = pwrusageArray[t].substring(0, n201)
 					if (partOfString.indexOf("water")>-1){
 							waterfound = true
+							console.log("*********Water  : " + pwrusageArray[t])
 							var n300 = pwrusageArray[t].indexOf('<price>') + "<price>".length
 							var n301 = pwrusageArray[t].indexOf('</price>',n300)
 							oldprice = pwrusageArray[t].substring(n300, n301)
-							var n305 = pwrusageArray[t].indexOf('<priceNet>') + "<priceNet>".length
-							var n306 = pwrusageArray[t].indexOf('</priceNet>',n305)
-							oldpriceNet = pwrusageArray[t].substring(n305, n306)
 							console.log("*********Water price : " + oldprice)
-							console.log("*********Water priceNet : " + oldpriceNet)
 					}
 				}
 	}
@@ -168,36 +137,10 @@ Screen {
 				}
 				break;
 			}
-			
-			case 2: {
-				if (oldpriceNet != newpriceNet) {
-					console.log("*********Water check pwrusageFileString for nett tariff")
-					pwrusageFileBak.write(oldpwrusageString)
-					try {
-						var tariffOld = new XMLHttpRequest();
-						tariffOld.onreadystatechange = function() {
-							if (tariffOld.readyState == XMLHttpRequest.DONE) {
-										var newContent = tariffOld.responseText
-										newContent = newContent.replace('<priceNet>' + oldpriceNet + '</priceNet>','<priceNet>' + newpriceNet + '</priceNet>')
-										var tariffNew = new XMLHttpRequest()
-										tariffNew.open("PUT", pwrusageFileString)
-										tariffNew.send(newContent)
-										tariffNew.close
-										app.popupString = "Prijs exclusief belastingen opgeslagen" + "..." 
-										needReboot = true
-							}
-						}
-						tariffOld.open("GET", pwrusageFileString, true);
-						tariffOld.send();
-					} catch(e) { }
-				}else{
-					app.popupString = "Prijs exclusief belastingen niet gewijzigd" + "..." 
-				}
-				break;
-			}
+		
 
 				
-			case 3: {
+			case 2: {
 				if (!needReboot) {
 					console.log("*********Water no changes in tariff so no need to restart")
 					app.popupString = "Restart niet nodig" + "..." 
@@ -211,7 +154,7 @@ Screen {
 			}
 			
 			
-			case 4: {
+			case 3: {
 				if (needReboot) {
 					console.log("*********Water reboot")
 					console.log("*********Water restartingToon")
