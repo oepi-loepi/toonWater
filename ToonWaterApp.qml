@@ -11,6 +11,7 @@ import BxtClient 1.0
 App {
 	id: waterApp
 	
+	property bool  	debugOutput : false
 	
 	property url 	tileUrl2 : "WaterTile.qml"
 	property url 	tileNow : "WaterNow.qml"
@@ -18,7 +19,7 @@ App {
 	//property url 	thumbnailIcon1: "qrc:/../apps/graph/drawables/waterTapTile-thumb.svg"    //werkt
 	//property url 	thumbnailIcon1: Qt.resolvedUrl("image:///apps/graph/drawables/waterTapTile-thumb.svg")  //werkt
 	property url 	thumbnailIcon1: ("qrc://apps/graph/drawables/waterTapTile-thumb.svg")    //werkt
-
+	property url 	minVersionURL: "https://raw.githubusercontent.com/ToonSoftwareCollective/toonWater/main/minversion.txt"    //werkt
 	
 	property	WaterConfigScreen  waterConfigScreen
 	property url 	waterConfigScreenUrl : "WaterConfigScreen.qml"
@@ -37,7 +38,7 @@ App {
 	property int 	todayValue : 0
 	property int 	dayAvgValue : 200
 	
-	property bool  	debugOutput : false
+	
     property int 	waterflowMobile : 0
 	property int 	watertodayMobile : 0
 	
@@ -58,6 +59,12 @@ App {
 	property 		Popup waterRebootPopup
 	
 	property bool  	domMode: false
+
+	property bool  	updateAvailable : false
+	property int	newmajor : 1
+	property int	newminor : 1 
+	property int	newbuild : 1
+	
 	property string urlDomString:""
 	property string domIdxFlow: ""
 	property string domIdxQuantity:""
@@ -99,6 +106,7 @@ App {
 		dateTimeNow= new Date()
 		scrapeTimer.running = true
 		scrapeTimer2.running = true
+		checkupdatetimer.running = true
 		
 		waterSettingsJson = JSON.parse(waterSettingsFile.read())
 		try {
@@ -180,9 +188,30 @@ App {
 						if (debugOutput) console.log("*********Water http.responseText: " + http.responseText)
 						var JsonString = http.responseText
 						var JsonObject= JSON.parse(JsonString)
-						// {"waterflow":"0","waterquantity":"1031188"}
+						// {"waterflow":"0","waterquantity":"1031287","version":"1.4.35","type":"demo"}
 						waterflow = parseInt(JsonObject.waterflow)
 						waterquantity = parseInt(JsonObject.waterquantity)
+						updateAvailable = false
+						updateAvailable = !(JsonObject.hasOwnProperty('version'))
+						if (!updateAvailable){
+							var versionArray = JsonObject.version.split('.');
+							var oldmajor =  parseInt(versionArray[0]);
+							if (debugOutput) console.log("*********oldmajor: " + oldmajor)
+							if (debugOutput) console.log("*********newmajor: " + newmajor)
+							var oldminor =  parseInt(versionArray[1]);
+							if (debugOutput) console.log("*********oldminor: " + oldminor)
+							if (debugOutput) console.log("*********newminor: " + newminor)
+							var oldbuild =  parseInt(versionArray[2]);
+							if (debugOutput) console.log("*********oldbuild: " + oldbuild)
+							if (debugOutput) console.log("*********newbuild: " + newbuild)
+							
+							
+							if (newmajor>oldmajor & !updateAvailable){updateAvailable = true;}
+							if (newmajor==oldmajor & newminor>oldminor & !updateAvailable){updateAvailable = true;}
+							if (newmajor==oldmajor & newminor==oldminor & newbuild>oldbuild & !updateAvailable ){updateAvailable = true;}
+							if (debugOutput) console.log("*********updateAvailable from version check: " + updateAvailable)
+						}				
+
 						if (debugOutput) console.log("*********Water waterflow: " + waterflow)
 						if (debugOutput) console.log("*********Water waterquantity: " + waterquantity)
 						if (yesterdayquantity == 0){yesterdayquantity = waterquantity}
@@ -209,7 +238,30 @@ App {
 		}
     }
 	
-
+	function getMinVersion(){
+		var http = new XMLHttpRequest()
+		http.open("GET", minVersionURL, true); //check the feeds from the webpage
+		http.onreadystatechange = function() {
+			if (http.readyState === XMLHttpRequest.DONE) {
+				if (http.status === 200) {
+					if (debugOutput) console.log("*********Water http.responseText: " + http.responseText)
+					var totalNewVersion = http.responseText
+						var versionArray = totalNewVersion.split('.');
+						newmajor =  parseInt(versionArray[0]);
+						if (debugOutput) console.log("*********newmajor: " + newmajor)
+						newminor =  parseInt(versionArray[1]);
+						if (debugOutput) console.log("*********newminor: " + newminor)
+						newbuild =  parseInt(versionArray[2]);
+						if (debugOutput) console.log("*********newbuild: " + newbuild)
+				}else {
+					if (debugOutput) console.log("*********Water error: " + http.status)
+				}
+			}
+		}
+		http.send();
+	}
+				
+	
 ///////////////////////////////////////////////////////////////// GET DATA Domoticz ///////////////////////////////////////////////////////////////////////////	
 			
 	function getDomoticzData(fivemin){
@@ -450,6 +502,16 @@ App {
 			}
     }
 	
+	Timer {
+            id: checkupdatetimer   //interval to write the data to the rrd
+            interval: 12*60*60*1000
+            repeat: true
+            running: false
+            triggeredOnStart: true
+            onTriggered: {
+				getMinVersion()
+			}
+    }
 ///////////////////////////////////////// SAVE ALL TO SETTINGS ///////////////////////////////////////////////////////////////////////////////////////////////// 
    	function saveSettings() {
 		var tempDomModeTxt

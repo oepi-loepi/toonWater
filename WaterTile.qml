@@ -8,6 +8,9 @@ Tile {
 	property int flow: app.waterflow
 	property int quan: app.waterquantity
 	property int day: app.todayValue
+	property bool updateAvailable: app.updateAvailable
+	property bool	tempDomMode: app.domMode
+	
 
 	onClicked: {
 			stage.openFullscreen(app.waterConfigScreenUrl)
@@ -21,6 +24,8 @@ Tile {
 		flow = app.waterflow
 		quan = app.waterquantity
 		day = app.todayValue
+		updateAvailable = app.updateAvailable
+		tempDomMode= app.domMode
 	}
 	
 	Text {
@@ -68,7 +73,6 @@ Tile {
 
 	Text {
 		id: totalQuantity
-
 		text: "Totaal: " + parseFloat(quan/1000).toFixed(3) + " m3"
 		color: !dimState? "black" : "white"
 		anchors {
@@ -79,8 +83,20 @@ Tile {
 		font.pixelSize: isNxt? 22:18
 		font.family: qfont.bold.name
     }
-
-
+	
+	Text {
+		id: updateAvailable1
+		text: "ESP Update beschikbaar"
+		color: !dimState? "black" : "white"
+		anchors {
+			top: totalQuantity.bottom
+			topMargin: 5
+			horizontalCenter: parent.horizontalCenter
+		}
+		font.pixelSize: isNxt? 22:18
+		font.family: qfont.bold.name
+		visible: !tempDomMode & updateAvailable
+    }	
 }
 
 

@@ -16,6 +16,7 @@ Screen {
 	property string tempdomIdxFlow: app.domIdxFlow
 	property string tempdomIdxQuantity: app.domIdxQuantity
 	property bool	tempDomMode: app.domMode
+	property bool	updateAvailable: app.updateAvailable
 
 	property string fieldText1 : "Nieuwe waterstand:"
 	property string tempTotal: app.waterquantity
@@ -270,6 +271,32 @@ Screen {
 		}
 		visible: !tempDomMode
 	}
+
+	Text {
+		id: updateAvailable1
+		text: "Update van de ESP beschikbaar, zie domoticaforum voor instructies om deze opnieuw te flashen:"
+		anchors {
+			top: espIP.bottom
+			topMargin: 10
+			left: myLabel.left
+		}
+		font.pixelSize: isNxt ? 18:14
+		font.family: qfont.bold.name
+		visible: !tempDomMode & updateAvailable
+    }
+	
+	Text {
+		id: updateAvailable2
+		text: "https://www.domoticaforum.eu/viewtopic.php?t=13090"
+		anchors {
+			top: updateAvailable1.bottom
+			topMargin: 5
+			left: myLabel.left
+		}
+		font.pixelSize: isNxt ? 18:14
+		font.family: qfont.bold.name
+		visible: !tempDomMode & updateAvailable
+    }
 
 	Text {
 		id: myLabel88
