@@ -11,7 +11,7 @@ import BxtClient 1.0
 App {
 	id: waterApp
 	
-	property bool  	debugOutput : false
+	property bool  	debugOutput : true
 	
 	property url 	tileUrl2 : "WaterTile.qml"
 	property url 	tileNow : "WaterNow.qml"
@@ -135,7 +135,7 @@ App {
 		var totalForAvg = 0
 		var avgcounter = 0
 		for (var i in lastFiveDays){
-			if (debugOutput) cconsole.log("*********Water lastFiveDays[i]: " + lastFiveDays[i])
+			if (debugOutput) console.log("*********Water lastFiveDays[i]: " + lastFiveDays[i])
 			if (!isNaN(lastFiveDays[i]) & (parseInt(lastFiveDays[i])>0)){
 					totalForAvg = totalForAvg + parseInt(lastFiveDays[i])
 					if (debugOutput) console.log("*********Water parsed lastFiveDays[i]: " + lastFiveDays[i])
@@ -187,8 +187,18 @@ App {
 					if (http.status === 200) {
 						if (debugOutput) console.log("*********Water http.responseText: " + http.responseText)
 						var JsonString = http.responseText
+						// {"waterflow":"0","waterquantity":"1294748","today":"48","currentBatch":"0","breakdetect":"0","leakdetect":"0","RSSI":"-29","version":"1.4.39","update":"0","pulselength":13693","pulsetime":"2186"}
+						// add an extra \" because of a firmware error
+						
+						if (debugOutput) console.log("*********Water http.responseText.indexOf : " + http.responseText.indexOf('ength\":\"'))
+						if(http.responseText.indexOf('ength\":\"') == -1){
+							var n1 = http.responseText.indexOf('ength":') + 'engt\":'.length +1
+							var newString = http.responseText.substring(0, n1) + "\"" + http.responseText.substring(n1, http.responseText.length)
+							JsonString = newString;
+							if (debugOutput) console.log("*********Water JsonString: " + JsonString)
+						}			
 						var JsonObject= JSON.parse(JsonString)
-						// {"waterflow":"0","waterquantity":"1031287","version":"1.4.35","type":"demo"}
+						
 						waterflow = parseInt(JsonObject.waterflow)
 						waterquantity = parseInt(JsonObject.waterquantity)
 						updateAvailable = false
