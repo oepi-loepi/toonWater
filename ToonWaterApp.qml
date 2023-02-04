@@ -11,7 +11,7 @@ import BxtClient 1.0
 App {
 	id: waterApp
 	
-	property bool  	debugOutput : true
+	property bool  	debugOutput : false
 	
 	property url 	tileUrl2 : "WaterTile.qml"
 	property url 	tileNow : "WaterNow.qml"
@@ -196,7 +196,8 @@ App {
 							var newString = http.responseText.substring(0, n1) + "\"" + http.responseText.substring(n1, http.responseText.length)
 							JsonString = newString;
 							if (debugOutput) console.log("*********Water JsonString: " + JsonString)
-						}			
+						}
+						
 						var JsonObject= JSON.parse(JsonString)
 						
 						waterflow = parseInt(JsonObject.waterflow)
