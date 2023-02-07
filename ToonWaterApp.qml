@@ -191,11 +191,15 @@ App {
 						// add an extra \" because of a firmware error
 						
 						if (debugOutput) console.log("*********Water http.responseText.indexOf : " + http.responseText.indexOf('ength\":\"'))
-						if(http.responseText.indexOf('ength\":\"') == -1){
-							var n1 = http.responseText.indexOf('ength":') + 'engt\":'.length +1
-							var newString = http.responseText.substring(0, n1) + "\"" + http.responseText.substring(n1, http.responseText.length)
-							JsonString = newString;
-							if (debugOutput) console.log("*********Water JsonString: " + JsonString)
+						
+						
+						if(http.responseText.indexOf('pulselength') > 0){
+							if(http.responseText.indexOf('ength\":\"') == -1){
+								var n1 = http.responseText.indexOf('ength":') + 'engt\":'.length +1
+								var newString = http.responseText.substring(0, n1) + "\"" + http.responseText.substring(n1, http.responseText.length)
+								JsonString = newString;
+								if (debugOutput) console.log("*********Water JsonString: " + JsonString)
+							}
 						}
 						
 						var JsonObject= JSON.parse(JsonString)

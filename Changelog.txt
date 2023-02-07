@@ -1,6 +1,9 @@
+1.1.22
+- workaround for ESP 1.4.38 error for older versions
+
+
 1.1.21
 - workaround for ESP 1.4.38 error
-
 
 1.1.20
 - Version tracking of ESP
