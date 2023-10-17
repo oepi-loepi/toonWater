@@ -70,6 +70,8 @@ App {
 	property string domIdxQuantity:""
 	property string urlEspString
 	
+	property bool	newDomoticz : false
+	
 	property string waterTariff : "1.0000"
 
 	
@@ -126,7 +128,44 @@ App {
 				domIdxFlow = waterSettingsJson['domIdxFlow']
 				domIdxQuantity = waterSettingsJson['domIdxQuantity']
 		} catch(e) {
-		} 
+		}
+		
+		
+		if (domMode){
+			if (debugOutput) console.log("*********Water get version from Domoticz")
+			var http = new XMLHttpRequest();
+			http.open("GET", urlDomString + "/json.htm?type=command&param=getversion", true)
+			http.onreadystatechange = function() {
+				if (http.readyState == XMLHttpRequest.DONE) {
+					if (http.status === 200 || http.status === 300  || http.status === 302) {
+						try {
+							var JsonString = http.responseText
+							if (debugOutput) console.log("*********Water http.responseText: " + http.responseText)
+							var JsonObject = JSON.parse(JsonString)
+							var mainVersion= parseInt((JsonObject.version).split('.')[0])
+							var minorVersion= parseInt((JsonObject.version).split('.')[1])
+							if (debugOutput) console.log("*********Water mainVersion: " + mainVersion)
+							if (debugOutput) console.log("*********Water minorVersion: " + minorVersion)
+							if (mainVersion>2022 || (mainVersion === 2022 & minorVersion >2)){
+								newDomoticz = true
+							}else{
+								newDomoticz = false
+							}
+							if (debugOutput) console.log("*********Water newDomoticz: " + newDomoticz)
+						}
+						catch(e){
+							newDomoticz = true
+							if (debugOutput) console.log("*********Water error -> newDomoticz: " + newDomoticz)
+						}
+					} else {
+						if (debugOutput) console.log("*********Water error: " + http.status)
+						newDomoticz = true
+						if (debugOutput) console.log("*********Water error -> newDomoticz: " + newDomoticz)
+					}
+				}
+			}
+			http.send();
+		}
 		
 		getTariff()
 		
@@ -152,8 +191,7 @@ App {
 				//console.log("*********Water yesterdayquantity from disk " + yesterdayquantity)
 			}
 		} catch(e) {}
-		
-		
+
 	}
 	
 ///////////////////////////////////////////////////////////////// GET BILLING TARIFF ///////////////////////////////////////////////////////////////////////////	
@@ -282,7 +320,13 @@ App {
 	function getDomoticzData(fivemin){
 		if (debugOutput) console.log("*********Water Start getDomoticzData")
 		var http = new XMLHttpRequest();
-		http.open("GET", urlDomString + "/json.htm?type=devices&rid=" + domIdxFlow, true)
+		var urlpart = ""
+		if(newDomoticz){
+			urlpart = "/json.htm?type=command&param=getdevices&rid="
+		}else{
+			urlpart = "/json.htm?type=devices&rid="
+		}
+		http.open("GET", urlDomString + urlpart + domIdxFlow, true)
 		http.onreadystatechange = function() {
 			if (http.readyState == XMLHttpRequest.DONE) {
 				if (http.status === 200 || http.status === 300  || http.status === 302) {
@@ -309,7 +353,13 @@ App {
 	function getDomoticzData2(fivemin, waterflow){
 		if (debugOutput) console.log("*********Water Start getDomoticzData")
 		var http = new XMLHttpRequest();
-		http.open("GET", urlDomString + "/json.htm?type=devices&rid=" + domIdxQuantity, true)
+		var urlpart = ""
+		if(newDomoticz){
+			urlpart = "/json.htm?type=command&param=getdevices&rid="
+		}else{
+			urlpart = "/json.htm?type=devices&rid="
+		}
+		http.open("GET", urlDomString + urlpart + domIdxFlow, true)
 		http.onreadystatechange = function() {
 			if (http.readyState == XMLHttpRequest.DONE) {
 				if (http.status === 200 || http.status === 300  || http.status === 302) {
