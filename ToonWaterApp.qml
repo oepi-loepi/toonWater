@@ -146,7 +146,7 @@ App {
 							var minorVersion= parseInt((JsonObject.version).split('.')[1])
 							if (debugOutput) console.log("*********Water mainVersion: " + mainVersion)
 							if (debugOutput) console.log("*********Water minorVersion: " + minorVersion)
-							if (mainVersion>2022 || (mainVersion === 2022 & minorVersion >2)){
+							if (mainVersion>2023 || (mainVersion === 2023 & minorVersion >1)){
 								newDomoticz = true
 							}else{
 								newDomoticz = false
