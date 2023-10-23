@@ -196,7 +196,7 @@ App {
 	
 ///////////////////////////////////////////////////////////////// GET BILLING TARIFF ///////////////////////////////////////////////////////////////////////////	
 	function getTariff(){
-		f (debugOutput) console.log("*********Water get Tariff")
+		if (debugOutput) console.log("*********Water get Tariff")
 		var waterfound = false
 		var pwrusageString =  pwrusageFile.read()
 		var pwrusageArray = pwrusageString.split("<billingInfo>")
