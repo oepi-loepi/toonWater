@@ -196,7 +196,7 @@ App {
 	
 ///////////////////////////////////////////////////////////////// GET BILLING TARIFF ///////////////////////////////////////////////////////////////////////////	
 	function getTariff(){
-		console.log("*********Water get Tariff")
+		f (debugOutput) console.log("*********Water get Tariff")
 		var waterfound = false
 		var pwrusageString =  pwrusageFile.read()
 		var pwrusageArray = pwrusageString.split("<billingInfo>")
@@ -326,6 +326,7 @@ App {
 		}else{
 			urlpart = "/json.htm?type=devices&rid="
 		}
+		if(debugOutput) console.log("*********Water Start getDomoticzData: " + urlDomString + urlpart + domIdxFlow)		
 		http.open("GET", urlDomString + urlpart + domIdxFlow, true)
 		http.onreadystatechange = function() {
 			if (http.readyState == XMLHttpRequest.DONE) {
@@ -359,7 +360,8 @@ App {
 		}else{
 			urlpart = "/json.htm?type=devices&rid="
 		}
-		http.open("GET", urlDomString + urlpart + domIdxFlow, true)
+		if(debugOutput) console.log("*********Water Start getDomoticzData: " + urlDomString + urlpart + domIdxQuantity)	
+		http.open("GET", urlDomString + urlpart + domIdxQuantity, true)
 		http.onreadystatechange = function() {
 			if (http.readyState == XMLHttpRequest.DONE) {
 				if (http.status === 200 || http.status === 300  || http.status === 302) {
