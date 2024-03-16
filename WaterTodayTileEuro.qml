@@ -9,6 +9,6 @@ BarTodayTile {
 	valueText : " EUR " + parseFloat(app.todayValue/1000 * parseFloat(app.waterTariff)).toFixed(2)
 	avgDayValue : app.dayAvgValue
 	onClicked: {
-		stage.openFullscreen(app.waterConfigScreenUrl)
+		stage.openFullscreen(app.graphScreenUrl, {agreementType: "water", unitType: "money", intervalType: "days"})
 	}
 }

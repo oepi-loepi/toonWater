@@ -9,6 +9,6 @@ BarTodayTile {
 	valueText : parseFloat(app.todayValue/1000).toFixed(2) + " m3"
 	avgDayValue : app.dayAvgValue
 	onClicked: {
-		stage.openFullscreen(app.waterConfigScreenUrl)
+		stage.openFullscreen(app.graphScreenUrl, {agreementType: "water", unitType: "energy", intervalType: "days"})
 	}
 }

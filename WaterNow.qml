@@ -49,7 +49,7 @@ Tile {
 		app.waterUpdated.connect(p.update)
 	}
 
-	onClicked: stage.openFullscreen(app.waterConfigScreenUrl)
+	onClicked: stage.openFullscreen(app.graphScreenUrl, {agreementType: "water", unitType: "energy", intervalType: "hours"})
 
 	Text {
 		id: waterWidgetText

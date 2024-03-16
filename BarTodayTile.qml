@@ -16,7 +16,7 @@ Tile {
 
 
 	onClicked: {
-		stage.openFullscreen(app.waterScreenUrl)
+		stage.openFullscreen(app.graphScreenUrl, {agreementType: "water", unitType: "energy", intervalType: "hours"})
 	}
 
 	function updateTileGraphic() {

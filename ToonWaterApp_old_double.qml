@@ -16,10 +16,6 @@ App {
 	property url 	tileUrl2 : "WaterTile.qml"
 	property url 	tileNow : "WaterNow.qml"
 
-	//property url requestDataThrobberUrl: "qrc:/qb/components/FullScreenThrobber.qml"
-	property url graphScreenUrl: "qrc:/../apps/graph/GraphScreen.qml"
-
-
 	//property url 	thumbnailIcon1: "qrc:/../apps/graph/drawables/waterTapTile-thumb.svg"    //werkt
 	//property url 	thumbnailIcon1: Qt.resolvedUrl("image:///apps/graph/drawables/waterTapTile-thumb.svg")  //werkt
 	property url 	thumbnailIcon1: ("qrc://apps/graph/drawables/waterTapTile-thumb.svg")    //werkt
@@ -110,9 +106,7 @@ App {
 	Component.onCompleted: {
 		for (var i = 0; i <= 5; i++){lastFiveDays[i] = 0 }
 		dateTimeNow= new Date()
-		scrapeTimer.running = true
-		scrapeTimer2.running = true
-		checkupdatetimer.running = true
+		
 		
 		waterSettingsJson = JSON.parse(waterSettingsFile.read())
 		try {
@@ -156,19 +150,34 @@ App {
 								newDomoticz = false
 							}
 							if (debugOutput) console.log("*********Water newDomoticz: " + newDomoticz)
+							scrapeTimer.running = true
+							scrapeTimer2.running = true
+							checkupdatetimer.running = true
 						}
 						catch(e){
 							newDomoticz = true
 							if (debugOutput) console.log("*********Water error -> newDomoticz: " + newDomoticz)
+							scrapeTimer.running = true
+							scrapeTimer2.running = true
+							checkupdatetimer.running = true
 						}
 					} else {
 						if (debugOutput) console.log("*********Water error: " + http.status)
 						newDomoticz = true
 						if (debugOutput) console.log("*********Water error -> newDomoticz: " + newDomoticz)
+						scrapeTimer.running = true
+						scrapeTimer2.running = true
+						checkupdatetimer.running = true
 					}
 				}
 			}
 			http.send();
+		}else{
+			scrapeTimer.running = true
+			scrapeTimer2.running = true
+			checkupdatetimer.running = true
+		
+		
 		}
 		
 		getTariff()
@@ -200,7 +209,7 @@ App {
 	
 ///////////////////////////////////////////////////////////////// GET BILLING TARIFF ///////////////////////////////////////////////////////////////////////////	
 	function getTariff(){
-		if (debugOutput) console.log("*********Water get Tariff")
+		console.log("*********Water get Tariff")
 		var waterfound = false
 		var pwrusageString =  pwrusageFile.read()
 		var pwrusageArray = pwrusageString.split("<billingInfo>")
@@ -330,7 +339,6 @@ App {
 		}else{
 			urlpart = "/json.htm?type=devices&rid="
 		}
-		if(debugOutput) console.log("*********Water Start getDomoticzData: " + urlDomString + urlpart + domIdxFlow)		
 		http.open("GET", urlDomString + urlpart + domIdxFlow, true)
 		http.onreadystatechange = function() {
 			if (http.readyState == XMLHttpRequest.DONE) {
@@ -364,8 +372,7 @@ App {
 		}else{
 			urlpart = "/json.htm?type=devices&rid="
 		}
-		if(debugOutput) console.log("*********Water Start getDomoticzData: " + urlDomString + urlpart + domIdxQuantity)	
-		http.open("GET", urlDomString + urlpart + domIdxQuantity, true)
+		http.open("GET", urlDomString + urlpart + domIdxFlow, true)
 		http.onreadystatechange = function() {
 			if (http.readyState == XMLHttpRequest.DONE) {
 				if (http.status === 200 || http.status === 300  || http.status === 302) {
